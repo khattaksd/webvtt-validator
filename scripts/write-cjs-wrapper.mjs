@@ -7,9 +7,9 @@ await mkdir(outDir, { recursive: true });
 const cjs = `"use strict";
 
 // Best-effort CommonJS entrypoint.
-// We re-export the UMD bundle (which already supports CommonJS environments).
+// We re-export the CJS bundle produced by Vite.
 
-module.exports = require("./webvtt-validator.umd.js");
+module.exports = require("./index.js");
 `;
 
 await writeFile(new URL('index.cjs', outDir), cjs, 'utf8');
