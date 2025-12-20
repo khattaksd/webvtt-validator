@@ -141,70 +141,70 @@ It has multiple cues.</textarea>
         </div>
     </div>
 
-    <script src="../dist/webvtt-validator.umd.js"></script>
-    <script>
+    <script type="module">
+        import { parse, DiagnosticSeverity } from '../dist/index.mjs';
+
         document.addEventListener('DOMContentLoaded', () => {
             const vttInput = document.getElementById('vttInput');
             const validateBtn = document.getElementById('validateBtn');
             const fileInput = document.getElementById('fileInput');
             const resultsDiv = document.getElementById('results');
-            
-            // Initialize validator
-            const validator = new WebVTTValidator();
-            
-            // Validate button click handler
+
             validateBtn.addEventListener('click', () => {
-                const result = validator.validate(vttInput.value);
+                const result = parse(vttInput.value);
                 displayResults(result);
             });
-            
-            // File input change handler
+
             fileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
-                
+
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     vttInput.value = event.target.result;
-                    // Auto-validate after loading
-                    const result = validator.validate(event.target.result);
+                    const result = parse(event.target.result);
                     displayResults(result);
                 };
                 reader.readAsText(file);
             });
-            
-            // Display validation results
-            function displayResults(result) {
-                resultsDiv.className = 'results ' + (result.isValid ? 'valid' : 'invalid');
-                
+
+            function displayResults(parseResult) {
+                const diagnostics = parseResult.diagnostics ?? [];
+                const errors = diagnostics.filter(d => d.severity === DiagnosticSeverity.Error);
+                const warnings = diagnostics.filter(d => d.severity === DiagnosticSeverity.Warning);
+                const isValid = errors.length === 0;
+
+                resultsDiv.className = 'results ' + (isValid ? 'valid' : 'invalid');
+
                 let html = `
-                    <h3>${result.isValid ? '✅ Valid WebVTT' : '❌ Invalid WebVTT'}</h3>
+                    <h3>${isValid ? '✅ Valid WebVTT' : '❌ Invalid WebVTT'}</h3>
                 `;
-                
-                if (result.errors.length > 0) {
+
+                if (errors.length > 0) {
                     html += '<h4>Errors:</h4><ul class="error-list">';
-                    result.errors.forEach(error => {
-                        html += `<li>${error}</li>`;
+                    errors.forEach(d => {
+                        const loc = d.line ? `Line ${d.line}:${d.col || 0} - ` : '';
+                        html += `<li>${loc}${d.message} (Code: ${d.code})</li>`;
                     });
                     html += '</ul>';
                 }
-                
-                if (result.warnings.length > 0) {
+
+                if (warnings.length > 0) {
                     html += '<h4>Warnings:</h4><ul class="warning-list">';
-                    result.warnings.forEach(warning => {
-                        html += `<li>${warning}</li>`;
+                    warnings.forEach(d => {
+                        const loc = d.line ? `Line ${d.line}:${d.col || 0} - ` : '';
+                        html += `<li>${loc}${d.message} (Code: ${d.code})</li>`;
                     });
                     html += '</ul>';
                 }
-                
-                if (result.errors.length === 0 && result.warnings.length === 0) {
+
+                if (errors.length === 0 && warnings.length === 0) {
                     html += '<p>No issues found. This appears to be a valid WebVTT file.</p>';
                 }
-                
+
                 resultsDiv.innerHTML = html;
             }
-            
-            // Initial validation
+
             validateBtn.click();
         });
     </script>

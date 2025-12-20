@@ -2,6 +2,10 @@
 
 A lightweight JavaScript library for validating WebVTT (Web Video Text Tracks) files in the browser. This library provides a simple API for validating WebVTT content and comes with a beautiful, responsive web interface for testing.
 
+## Links
+
+- Demo (GitHub Pages): https://<your-org-or-user>.github.io/<your-repo>/
+
 ## Support policy
 
 This package is tested against **Node current LTS and the previous LTS**.
@@ -25,52 +29,35 @@ This package is tested against **Node current LTS and the previous LTS**.
 pnpm add webvtt-validator
 ```
 
-### Via CDN
-
-```html
-<script src="https://unpkg.com/webvtt-validator/dist/webvtt-validator.umd.js"></script>
-```
-
 ## Usage
 
 ### In the Browser
 
-```html
-<script src="path/to/webvtt-validator.umd.js"></script>
-<script>
-  const validator = new WebVTTValidator();
-  const result = validator.validate('WEBVTT\n\n00:00:01.000 --> 00:00:05.000\nHello, world!');
-  
-  console.log(result);
-  // {
-  //   isValid: true,
-  //   errors: [],
-  //   warnings: []
-  // }
-</script>
-```
+The `dist/index.mjs` bundle is browser-compatible ESM.
 
 ### In Node.js
 
 #### ESM
 
 ```javascript
-import WebVTTValidator from 'webvtt-validator';
+import { parse, DiagnosticSeverity, formatDiagnostics } from 'webvtt-validator';
 
-const validator = new WebVTTValidator();
-const result = validator.validate('WEBVTT\n\n00:00:01.000 --> 00:00:05.000\nHello, world!');
+const result = parse('WEBVTT\n\n00:00:01.000 --> 00:00:05.000\nHello, world!');
 
-console.log(result);
+const errors = result.diagnostics.filter(d => d.severity === DiagnosticSeverity.Error);
+console.log(errors.length === 0);
+console.log(formatDiagnostics(result.diagnostics));
 ```
 
 #### CommonJS (best effort)
 
 ```javascript
-const WebVTTValidator = require('webvtt-validator');
-const validator = new WebVTTValidator();
-const result = validator.validate('WEBVTT\n\n00:00:01.000 --> 00:00:05.000\nHello, world!');
+const { parse, DiagnosticSeverity, formatDiagnostics } = require('webvtt-validator');
 
-console.log(result);
+const result = parse('WEBVTT\n\n00:00:01.000 --> 00:00:05.000\nHello, world!');
+const errors = result.diagnostics.filter(d => d.severity === DiagnosticSeverity.Error);
+console.log(errors.length === 0);
+console.log(formatDiagnostics(result.diagnostics));
 ```
 
 ### Web Interface
@@ -79,22 +66,9 @@ Open the `demo/index.html` file in your browser to use the web interface for val
 
 ## API Reference
 
-### `new WebVTTValidator()`
+### `parse(input, options?)`
 
-Creates a new instance of the WebVTT validator.
-
-### `validator.validate(content)`
-
-Validates the provided WebVTT content.
-
-**Parameters:**
-- `content` (String): The WebVTT content to validate.
-
-**Returns:**
-- (Object): An object containing the validation results:
-  - `isValid` (Boolean): `true` if the content is valid, `false` otherwise.
-  - `errors` (Array): An array of error messages.
-  - `warnings` (Array): An array of warning messages.
+Parses WebVTT input and returns cues plus a structured diagnostics list.
 
 ## Validation Rules
 
@@ -130,4 +104,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Demo
 
-Try the live demo by opening `demo/index.html` in your browser after building the project.
+Try the demo by opening `demo/index.html` in your browser after running `pnpm run build`.

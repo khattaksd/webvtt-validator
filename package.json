@@ -16,11 +16,13 @@
   },
   "scripts": {
     "build": "vite build && node scripts/write-cjs-wrapper.mjs",
+    "build:pages": "pnpm run build && node scripts/build-pages.mjs",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run",
     "test:browser": "pnpm run build && node test/browser/smoke.mjs",
     "test:dist": "pnpm run build && node test/dist/smoke.mjs",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "ci": "pnpm run test && pnpm run test:dist && pnpm run test:browser"
   },
   "keywords": [
     "webvtt",
