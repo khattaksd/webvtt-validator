@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { parse, constructDOM, NodeType } from '../../src/index.js';
+import { parse } from '../../src/index.js';
+import { constructDOM } from '../../src/parser/cue-text/dom-construction.js';
+import { NodeType } from '../../src/parser/cue-text/parse-nodes.js';
 
 describe('Public API', () => {
   it('should expose parse function', () => {
