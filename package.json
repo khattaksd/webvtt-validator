@@ -1,0 +1,42 @@
+{
+  "name": "webvtt-validator",
+  "version": "1.0.0",
+  "description": "A lightweight WebVTT validation library with a beautiful UI",
+  "packageManager": "pnpm@9.15.0",
+  "main": "dist/index.cjs",
+  "module": "dist/webvtt-validator.es.js",
+  "browser": "dist/webvtt-validator.umd.js",
+  "exports": {
+    ".": {
+      "import": "./dist/webvtt-validator.es.js",
+      "require": "./dist/index.cjs",
+      "browser": "./dist/webvtt-validator.umd.js"
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "unpkg": "dist/webvtt-validator.umd.js",
+  "jsdelivr": "dist/webvtt-validator.umd.js",
+  "scripts": {
+    "build": "vite build && node scripts/write-cjs-wrapper.mjs",
+    "prepublishOnly": "pnpm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "webvtt",
+    "validator",
+    "vtt",
+    "subtitles",
+    "captions"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
+}

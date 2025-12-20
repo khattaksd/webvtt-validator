@@ -1,0 +1,25 @@
+node_modules/
+.pnpm-store/
+dist/
+
+# Vite
+.vite/
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Env
+.env
+.env.*
+
+# Misc
+*.tgz
