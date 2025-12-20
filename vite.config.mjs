@@ -3,10 +3,10 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   build: {
     lib: {
-      entry: 'src/webvtt-validator.js',
-      name: 'WebVTTValidator',
-      fileName: (format) => `webvtt-validator.${format}.js`,
-      formats: ['es', 'umd']
+      entry: 'src/index.js',
+      name: 'WebVTTParser',
+      fileName: 'index',
+      formats: ['es', 'cjs']
     },
     sourcemap: true,
     minify: 'esbuild',

@@ -12,7 +12,7 @@ It is intentionally written as a tracker: checkboxes, milestones, and a conforma
 - Implement **spec-accurate parsing** (not just heuristic validation).
 - Support **cue text parsing** (tokenizer + node tree + DOM construction rules) as specified.
 - Provide **structured diagnostics** (errors/warnings) with good formatting.
-- Keep current public API working: `new WebVTTValidator().validate(content)`.
+- **Clean, spec-aligned API** (no legacy constraints).
 - Make strictness and CSS handling configurable via options.
 
 ## Non-goals (for now)
@@ -22,50 +22,51 @@ It is intentionally written as a tracker: checkboxes, milestones, and a conforma
 
 ---
 
-## Proposed public API
+## Proposed Public API
 
-### 1) Existing API (kept)
+### Primary Entry Point
 
-- `new WebVTTValidator()`
-- `validator.validate(content, options?) -> ValidationResult`
+```typescript
+import { parse } from 'webvtt-parser';
 
-### 2) New parser API (exported)
+const result = parse(inputString, options);
+```
 
-- `parseWebVTT(input, options?) -> ParseResult`
-
-### 3) Types (informal)
-
-#### `ValidationResult`
-
-- `isValid: boolean`
-- `diagnostics: Diagnostic[]` (new)
-- `errors: string[]` (derived for backwards compatibility)
-- `warnings: string[]` (derived for backwards compatibility)
-- `cues?: Cue[]` (optional; controlled by options)
-- `regions?: Region[]`
-- `stylesheets?: Stylesheet[]`
+### Types
 
 #### `ParseResult`
 
 - `cues: Cue[]`
 - `regions: Region[]`
-- `stylesheets: Stylesheet[]`
+- `stylesheets: Stylesheet[]` // Raw CSS text or parsed rules
 - `diagnostics: Diagnostic[]`
+- `metadata: Metadata` // File-level metadata from header
+
+#### `Cue` (Spec-aligned)
+
+- `id: string`
+- `startTime: number`
+- `endTime: number`
+- `pauseOnExit: boolean`
+- `vertical: "rl" | "lr" | null`
+- `snapToLines: boolean`
+- `line: number | "auto"`
+- `lineAlign: "start" | "center" | "end" | null`
+- `position: number | "auto"`
+- `positionAlign: "line-left" | "center" | "line-right" | "auto"`
+- `size: number`
+- `align: "start" | "center" | "end" | "left" | "right"`
+- `text: string` // Raw payload
+- `tree?: WebVTTNode` // Parsed node tree (if enabled)
 
 #### `Diagnostic`
 
-- `severity: "error" | "warning"`
-- `code: string` (stable identifier for tests)
+- `severity: "error" | "warning" | "info"`
+- `code: number` (or string enum)
 - `message: string`
-- `location?: { line: number, column: number, offset?: number }`
-- `range?: { start: { line: number, column: number }, end: { line: number, column: number } }`
-- `spec?: { url: string, label?: string }` (link to the relevant spec section)
-- `context?: Record<string, unknown>` (e.g. offending token/value)
-
-#### Diagnostic formatting
-
-- Provide `formatDiagnostics(diagnostics, { color?: boolean, max?: number }) -> string`.
-- The validator UI can show structured diagnostics; Node users can print formatted output.
+- `line: number`
+- `col: number`
+- `raw?: string` // The offending text
 
 ---
 
@@ -134,60 +135,60 @@ Note: The build currently uses Vite library mode; keep that. Add Vitest for test
 
 ### Milestone A — Parser foundation (§6.1)
 
-- [ ] Implement `normalizeInput()` (replace NUL, normalize CRLF/CR to LF)
-- [ ] Implement signature validation (exact rules in §6.1 steps 7–9)
-- [ ] Implement scanner/pointer utilities (collect line, collect LF run, skip ASCII whitespace)
-- [ ] Implement top-level parse loop that collects blocks until EOF
+- [x] Implement `normalizeInput()` (replace NUL, normalize CRLF/CR to LF)
+- [x] Implement signature validation (exact rules in §6.1 steps 7–9)
+- [x] Implement scanner/pointer utilities (collect line, collect LF run, skip ASCII whitespace)
+- [x] Implement top-level parse loop that collects blocks until EOF
 
 ### Milestone B — Block collection (§6.1 “collect a WebVTT block”)
 
-- [ ] Implement block reading until blank line / EOF
-- [ ] Implement cue detection rules around `-->` and cue identifier buffering
-- [ ] Implement STYLE block detection and collection
-- [ ] Implement REGION block detection and collection
-- [ ] Attach cue payload text to cue correctly
-- [ ] Recovery behavior under `strict` option
+- [x] Implement block reading until blank line / EOF
+- [x] Implement cue detection rules around `-->` and cue identifier buffering
+- [x] Implement STYLE block detection and collection
+- [x] Implement REGION block detection and collection
+- [x] Attach cue payload text to cue correctly
+- [x] Recovery behavior under `strict` option
 
 ### Milestone C — Regions (§6.2)
 
-- [ ] Implement `parsePercentageString()`
-- [ ] Implement `parseRegionSettings()`
-- [ ] Validate region defaults
+- [x] Implement `parsePercentageString()`
+- [x] Implement `parseRegionSettings()`
+- [x] Validate region defaults
 
 ### Milestone D — Cue timings/settings (§6.3)
 
-- [ ] Implement spec-accurate timestamp parsing
-- [ ] Implement cue timing line parsing including strict arrow parsing
-- [ ] Implement cue settings parsing: `region`, `vertical`, `line`, `position`, `size`, `align`
-- [ ] Apply spec side-effects (e.g., vertical => region null)
-- [ ] Validate start < end
+- [x] Implement spec-accurate timestamp parsing
+- [x] Implement cue timing line parsing including strict arrow parsing
+- [x] Implement cue settings parsing: `region`, `vertical`, `line`, `position`, `size`, `align`
+- [x] Apply spec side-effects (e.g., vertical => region null)
+- [x] Validate start < end
 
 ### Milestone E — Cue text parsing (§6.4)
 
-- [ ] Implement cue text tokenizer (start tags, end tags, timestamps, text runs, escapes)
-- [ ] Implement node model:
+- [x] Implement cue text tokenizer (start tags, end tags, timestamps, text runs, escapes)
+- [x] Implement node model:
   - Internal nodes: `root`, `c`, `i`, `b`, `u`, `ruby`, `rt`, `v`, `lang`
   - Leaf nodes: `text`, `timestamp`
-- [ ] Implement language stack handling and class accumulation
-- [ ] Implement rules for malformed tags (generate diagnostics, apply recovery per spec)
-- [ ] Emit node tree onto cue as `cue.nodes` when enabled
+- [x] Implement language stack handling and class accumulation
+- [x] Implement rules for malformed tags (generate diagnostics, apply recovery per spec)
+- [x] Emit node tree onto cue as `cue.nodes` when enabled
 
 ### Milestone F — DOM construction (§6.5)
 
-- [ ] Implement DOM construction rules (conceptual DOM; not browser DOM)
-- [ ] Validate that constructed DOM matches node tree expectations
+- [x] Implement DOM construction rules (conceptual DOM; not browser DOM)
+- [x] Validate that constructed DOM matches node tree expectations
 
 ### Milestone G — Structured diagnostics + formatting
 
-- [ ] Implement diagnostic schema + helpers
-- [ ] Provide `formatDiagnostics()`
-- [ ] Update `validate()` to return `diagnostics`, and also derived `errors[]`/`warnings[]`
+- [x] Implement diagnostic schema + helpers
+- [x] Provide `formatDiagnostics()`
+- [x] Update `validate()` to return `diagnostics`, and also derived `errors[]`/`warnings[]`
 
 ### Milestone H — Test harness + conformance suite
 
-- [ ] Add `vitest` and wire `pnpm test`
-- [ ] Create conformance matrix tests for each spec section
-- [ ] Add fixtures and golden outputs where appropriate
+- [x] Add `vitest` and wire `pnpm test`
+- [x] Create conformance matrix tests for each spec section
+- [x] Add fixtures and golden outputs where appropriate
 
 ---
 
@@ -195,33 +196,33 @@ Note: The build currently uses Vite library mode; keep that. Add Vitest for test
 
 ### §6.1 WebVTT file parsing
 
-- [ ] **Normalization**
+- [x] **Normalization**
   - NUL -> U+FFFD
   - CRLF -> LF
   - CR -> LF
-- [ ] **Signature**
+- [x] **Signature**
   - exact `WEBVTT` only
   - 7th char whitespace/LF requirement
   - abort behavior under `strict` vs recover under `best-effort`
-- [ ] **Header collection**
+- [x] **Header collection**
   - header metadata lines are consumed as header block
   - header block does not create cues
-- [ ] **Block loop**
+- [x] **Block loop**
   - multiple cues
   - blank line separation
   - EOF edge cases
 
 ### §6.2 Region settings
 
-- [ ] Parse `id`, `width`, `lines`, `regionanchor`, `viewportanchor`, `scroll`
-- [ ] Ignore invalid tokens (do not error unless `strict` demands warnings)
+- [x] Parse `id`, `width`, `lines`, `regionanchor`, `viewportanchor`, `scroll`
+- [x] Ignore invalid tokens (do not error unless `strict` demands warnings)
 
 ### §6.3 Cue timings and settings
 
-- [ ] Arrow parsing exactly `-->`
-- [ ] Timestamp parsing rules (valid and invalid)
-- [ ] Start < end
-- [ ] Settings:
+- [x] Arrow parsing exactly `-->`
+- [x] Timestamp parsing rules (valid and invalid)
+- [x] Start < end
+- [x] Settings:
   - region lookup ("last region with id")
   - vertical side-effects
   - line numeric/percent + line alignment
@@ -232,27 +233,27 @@ Note: The build currently uses Vite library mode; keep that. Add Vitest for test
 ### §6.4 Cue text parsing rules
 
 Tokenizer tests:
-- [ ] Plain text and escapes
-- [ ] Start/end tags (`<i>...</i>`, `<b>`, `<u>`, `<c.class>`, `<v Voice>`, `<lang en>`)
-- [ ] Ruby constructs (`<ruby>`, `<rt>`)
-- [ ] Timestamp tags inside cue text
-- [ ] Malformed tags recovery cases
+- [x] Plain text and escapes
+- [x] Start/end tags (`<i>...</i>`, `<b>`, `<u>`, `<c.class>`, `<v Voice>`, `<lang en>`)
+- [x] Ruby constructs (`<ruby>`, `<rt>`)
+- [x] Timestamp tags inside cue text
+- [x] Malformed tags recovery cases
 
 Node tree tests:
-- [ ] Correct nesting and tree shape
-- [ ] Applicable classes and language propagation
-- [ ] Voice value preservation
+- [x] Correct nesting and tree shape
+- [x] Applicable classes and language propagation
+- [x] Voice value preservation
 
 ### §6.5 DOM construction rules
 
-- [ ] Constructed DOM-like objects match expected structure
-- [ ] Ensure timestamps/text nodes end up in correct order
+- [x] Constructed DOM-like objects match expected structure
+- [x] Ensure timestamps/text nodes end up in correct order
 
 ### Cross-cutting: diagnostics
 
-- [ ] Codes are stable and tested (snapshot or explicit assertions)
-- [ ] Locations are correct for line/column
-- [ ] Formatting output is readable and deterministic
+- [x] Codes are stable and tested (snapshot or explicit assertions)
+- [x] Locations are correct for line/column
+- [x] Formatting output is readable and deterministic
 
 ---
 
