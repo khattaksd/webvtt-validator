@@ -1,4 +1,4 @@
-import { DiagnosticSeverity, DiagnosticCode, createDiagnostic, Diagnostic } from './diagnostics';
+import { DiagnosticSeverity, DiagnosticCode, createDiagnostic, Diagnostic } from './diagnostics.ts';
 
 /**
  * Validates WebVTT file signature.

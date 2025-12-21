@@ -1,4 +1,4 @@
-import { Region } from './model';
+import { Region } from './model.ts';
 
 /**
  * Parses region settings.

@@ -1,6 +1,6 @@
-export { parse } from './parser/parse-webvtt';
+export { parse } from './parser/parse-webvtt.ts';
 export {
   DiagnosticSeverity,
   DiagnosticCode,
   formatDiagnostics,
-} from './parser/diagnostics';
+} from './parser/diagnostics.ts';

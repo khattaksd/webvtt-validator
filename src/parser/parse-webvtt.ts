@@ -1,9 +1,9 @@
-import { normalizeInput } from './normalization';
-import { Scanner } from './scanner';
-import { validateSignature } from './signature';
-import { collectBlock } from './block';
-import { DiagnosticSeverity, Diagnostic } from './diagnostics';
-import { Cue, Region, Stylesheet } from './model';
+import { normalizeInput } from './normalization.ts';
+import { Scanner } from './scanner.ts';
+import { validateSignature } from './signature.ts';
+import { collectBlock } from './block.ts';
+import { DiagnosticSeverity, Diagnostic } from './diagnostics.ts';
+import { Cue, Region, Stylesheet } from './model.ts';
 
 /**
  * Options for configuring the WebVTT parser behavior.

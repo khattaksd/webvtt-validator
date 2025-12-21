@@ -4,6 +4,8 @@
     "module": "ESNext",
     "lib": ["ES2020"],
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
     "allowJs": true,
     "checkJs": false,
     "declaration": true,

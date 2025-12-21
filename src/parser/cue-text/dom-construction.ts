@@ -1,4 +1,4 @@
-import { NodeType, WebVTTNode } from './parse-nodes';
+import { NodeType, WebVTTNode } from './parse-nodes.ts';
 
 export interface DOMNode {
   nodeType: string;

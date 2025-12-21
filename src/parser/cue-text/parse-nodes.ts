@@ -1,5 +1,5 @@
-import { CueTextTokenizer, TokenType } from './tokenizer';
-import { parseTimestamp } from '../timestamp';
+import { CueTextTokenizer, TokenType } from './tokenizer.ts';
+import { parseTimestamp } from '../timestamp.ts';
 
 /**
  * Node types for the cue text DOM.

@@ -1,10 +1,10 @@
-import { Cue, Stylesheet, Region } from './model';
-import { parseTimestamp } from './timestamp';
-import { parseCueSettings } from './cue-settings';
-import { parseRegionSettings } from './region-settings';
-import { parseCueText } from './cue-text/parse-nodes';
-import { createDiagnostic, DiagnosticSeverity, DiagnosticCode, Diagnostic } from './diagnostics';
-import { Scanner } from './scanner';
+import { Cue, Stylesheet, Region } from './model.ts';
+import { parseTimestamp } from './timestamp.ts';
+import { parseCueSettings } from './cue-settings.ts';
+import { parseRegionSettings } from './region-settings.ts';
+import { parseCueText } from './cue-text/parse-nodes.ts';
+import { createDiagnostic, DiagnosticSeverity, DiagnosticCode, Diagnostic } from './diagnostics.ts';
+import { Scanner } from './scanner.ts';
 
 export interface Block {
   type: "cue" | "region" | "style" | "none";

@@ -1,4 +1,4 @@
-import { Cue, Region } from './model';
+import { Cue, Region } from './model.ts';
 
 /**
  * Parses cue settings and updates the cue object.
