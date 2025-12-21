@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebVTT Validator</title>
+    <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+    <header class="app-header" role="banner">
+        <div class="app-title">
+            <h1>WebVTT Validator</h1>
+            <div class="app-subtitle">Offline demo UI</div>
+        </div>
+        <div class="app-actions">
+            <button id="validateBtn" type="button">Validate</button>
+            <label class="btn" for="fileInput">Load .vtt</label>
+            <input type="file" id="fileInput" class="sr-only" accept=".vtt,text/vtt">
+        </div>
+    </header>
+
+    <main class="split" id="split" role="main">
+        <section class="panel" id="panelInput" aria-label="Input">
+            <div class="panel-header">
+                <div class="panel-title">Input</div>
+                <div class="panel-tools">
+                    <label class="tool">
+                        <span class="tool-label">Sample</span>
+                        <select id="sampleSelect">
+                            <option value="default">Basic</option>
+                            <option value="invalid">Broken timestamps</option>
+                            <option value="tags">Cue text tags</option>
+                        </select>
+                    </label>
+                    <button id="clearBtn" type="button" class="btn-secondary">Clear</button>
+                </div>
+            </div>
+            <textarea id="vttInput" spellcheck="false" aria-label="WebVTT input"></textarea>
+            <div class="hint">Tip: paste WebVTT on the left. Results update automatically.</div>
+        </section>
+
+        <div class="gutter" id="gutter" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Resize panels"></div>
+
+        <section class="panel" id="panelResults" aria-label="Results">
+            <div class="panel-header">
+                <div class="panel-title">Results</div>
+                <div class="panel-tools">
+                    <div class="chips" aria-label="Summary">
+                        <span class="chip" id="chipErrors">Errors: 0</span>
+                        <span class="chip" id="chipWarnings">Warnings: 0</span>
+                        <span class="chip" id="chipCues">Cues: 0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="status" id="status" aria-live="polite"></div>
+            <div class="diagnostics" id="diagnostics"></div>
+        </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+</body>
+</html>

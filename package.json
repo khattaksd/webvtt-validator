@@ -1,0 +1,54 @@
+{
+  "name": "@serendevity/webvtt-validator",
+  "version": "0.1.0",
+  "description": "A lightweight WebVTT validation library with a beautiful UI",
+  "packageManager": "pnpm@9.15.0",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "exports": {
+    ".": {
+      "deno": "./mod.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "vite build && node scripts/write-cjs-wrapper.mjs",
+    "build:pages": "pnpm run build && node scripts/build-pages.mjs",
+    "demo": "pnpm run build:pages && vite pages --host 127.0.0.1",
+    "prepublishOnly": "pnpm run build",
+    "test": "vitest run",
+    "test:browser": "pnpm run build && node test/browser/smoke.mjs",
+    "test:dist": "pnpm run build && node test/dist/smoke.mjs",
+    "test:watch": "vitest",
+    "ci": "pnpm run test && pnpm run test:dist && pnpm run test:browser"
+  },
+  "keywords": [
+    "webvtt",
+    "validator",
+    "vtt",
+    "subtitles",
+    "captions"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/khattaksd/webvtt-validator"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "vite": "^7.3.0",
+    "vitest": "^4.0.16"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
+}
