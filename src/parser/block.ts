@@ -48,11 +48,23 @@ export function collectBlock(scanner: Scanner, context: BlockContext): Block {
   
   let isCue = false;
   let timingLineIndex = -1;
+  const looksLikeTimingLineButBadArrow = (line: string) => {
+    if (line.includes('-->')) return false;
+    if (!line.includes('>')) return false;
+    if (!line.includes('--')) return false;
+    return /\d{2}:\d{2}/.test(line);
+  };
   
   if (lines[0].includes('-->')) {
     isCue = true;
     timingLineIndex = 0;
   } else if (lines.length > 1 && lines[1].includes('-->')) {
+    isCue = true;
+    timingLineIndex = 1;
+  } else if (looksLikeTimingLineButBadArrow(lines[0])) {
+    isCue = true;
+    timingLineIndex = 0;
+  } else if (lines.length > 1 && looksLikeTimingLineButBadArrow(lines[1])) {
     isCue = true;
     timingLineIndex = 1;
   }
