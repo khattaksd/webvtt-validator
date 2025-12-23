@@ -8,7 +8,8 @@
  */
 export function normalizeInput(input: string): string {
   if (!input) return '';
-  return input
+  const withoutBom = input.startsWith('\uFEFF') ? input.slice(1) : input;
+  return withoutBom
     .replace(/\u0000/g, '\uFFFD')
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n');

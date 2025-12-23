@@ -71,14 +71,38 @@ export function parse(input: string, options: ParserOptions = {}): ParseResult {
 
   // Header block parsing (metadata)
   // Spec step 14: Header: If char is not LF, collect Header Block.
-  if (scanner.peek() !== '\n' && !scanner.isEnd()) {
-      // Collect header block
-      collectBlock(scanner, { inHeader: true });
-      // Header block doesn't produce cues/regions/styles usually, just metadata
-      // But for now we just consume it.
-  } else {
-      // Otherwise (it IS a LF), advance position (consume blank line LF)
-      scanner.scanLineEnding();
+  if (!scanner.isEnd()) {
+      const headerLineStart = scanner.position;
+      const headerCandidateLine = scanner.collectLine();
+      scanner.position = headerLineStart;
+
+      // Treat whitespace-only line as a blank separator line.
+      // This is important because some files may use a space-only line between signature and first cue.
+      if (headerCandidateLine.trim() === '') {
+          scanner.collectLine();
+          scanner.scanLineEnding();
+      } else {
+          // Collect header block
+          const headerBlock = collectBlock(scanner, {
+            inHeader: true,
+            regions,
+            parseCueText: options.output?.includeCueTextNodes ?? true,
+          });
+
+          if (headerBlock.diagnostics && headerBlock.diagnostics.length > 0) {
+            diagnostics.push(...headerBlock.diagnostics);
+          }
+
+          // Best-effort: if a cue/style/region is encountered in the header, collect it.
+          // (We already emitted a diagnostic in block collection for cue-in-header.)
+          if (headerBlock.type === 'cue' && headerBlock.value) {
+            cues.push(headerBlock.value as Cue);
+          } else if (headerBlock.type === 'region' && headerBlock.value) {
+            regions.push(headerBlock.value as Region);
+          } else if (headerBlock.type === 'style' && headerBlock.value) {
+            stylesheets.push(headerBlock.value as Stylesheet);
+          }
+      }
   }
 
   // Spec step 15: Collect a sequence of code points that are U+000A LINE FEED (LF) characters.

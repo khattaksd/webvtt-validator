@@ -39,6 +39,11 @@ export function collectBlock(scanner: Scanner, context: BlockContext): Block {
   if (lines.length === 0) {
     return { type: 'none', value: null, diagnostics };
   }
+
+  // NOTE blocks are comments and should be ignored.
+  if (lines[0].startsWith('NOTE')) {
+    return { type: 'none', value: null, diagnostics };
+  }
   
   // 2. Identify Block Type
   
@@ -70,6 +75,17 @@ export function collectBlock(scanner: Scanner, context: BlockContext): Block {
   }
   
   if (isCue) {
+    if (context.inHeader) {
+      diagnostics.push(createDiagnostic(
+        DiagnosticSeverity.Error,
+        DiagnosticCode.BLOCK_UNEXPECTED,
+        'Cue block found in header; missing blank line after header',
+        0,
+        0,
+        lines[0]
+      ));
+    }
+
     const cue = new Cue();
     
     // ID
@@ -148,7 +164,7 @@ export function collectBlock(scanner: Scanner, context: BlockContext): Block {
     
     // Parse Node Tree if requested
     if (context.parseCueText !== false) {
-        cue.tree = parseCueText(cue.text);
+        cue.tree = parseCueText(cue.text, diagnostics);
     }
     
     return { type: 'cue', value: cue, diagnostics };
@@ -203,8 +219,11 @@ export function collectBlock(scanner: Scanner, context: BlockContext): Block {
                // "Let settings be the result of splitting input on spaces" => newlines become spaces effectively if split matches \s+.
                
                const regionPayload = lines.slice(1).join(' '); // Join with space to treat newlines as separators
-               const region = parseRegionSettings(regionPayload);
-               return { type: 'region', value: region, diagnostics };
+               const parsed = parseRegionSettings(regionPayload);
+               if (parsed.diagnostics.length > 0) {
+                 diagnostics.push(...parsed.diagnostics);
+               }
+               return { type: 'region', value: parsed.region, diagnostics };
           }
       }
   }
@@ -215,5 +234,16 @@ export function collectBlock(scanner: Scanner, context: BlockContext): Block {
   // Spec says: "If block is a WebVTT cue... Otherwise if block is CSS... Otherwise if Region..."
   // If none match, it's ignored.
   
+  if (!context.inHeader) {
+    diagnostics.push(createDiagnostic(
+      DiagnosticSeverity.Error,
+      DiagnosticCode.BLOCK_UNEXPECTED,
+      'Unrecognized block',
+      0,
+      0,
+      lines[0]
+    ));
+  }
+
   return { type: 'none', value: null, diagnostics };
 }

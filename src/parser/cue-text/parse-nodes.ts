@@ -1,5 +1,6 @@
 import { CueTextTokenizer, TokenType } from './tokenizer.ts';
 import { parseTimestamp } from '../timestamp.ts';
+import { createDiagnostic, DiagnosticCode, DiagnosticSeverity, type Diagnostic } from '../diagnostics.ts';
 
 /**
  * Node types for the cue text DOM.
@@ -46,7 +47,7 @@ export class WebVTTNode {
  * @param {string} input
  * @returns {WebVTTNode} Root node
  */
-export function parseCueText(input: string): WebVTTNode {
+export function parseCueText(input: string, diagnostics: Diagnostic[] = []): WebVTTNode {
   const tokenizer = new CueTextTokenizer(input);
   const root = new WebVTTNode(NodeType.ROOT);
   let current = root;
@@ -72,6 +73,15 @@ export function parseCueText(input: string): WebVTTNode {
                     const node = new WebVTTNode(NodeType.TIMESTAMP);
                     node.value = timestamp;
                     current.appendChild(node);
+                } else {
+                    diagnostics.push(createDiagnostic(
+                      DiagnosticSeverity.Error,
+                      DiagnosticCode.CUETEXT_TIMESTAMP_INVALID,
+                      'Invalid cue text timestamp',
+                      0,
+                      0,
+                      token.value
+                    ));
                 }
             }
             break;
