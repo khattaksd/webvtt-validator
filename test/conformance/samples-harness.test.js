@@ -4,8 +4,8 @@ import { parse, DiagnosticSeverity } from '../../src/index.ts';
 
 describe('Samples harness', () => {
   it('validates all samples from manifest', async () => {
-    const resourcesRoot = new URL('../resources/', import.meta.url);
-    const manifestUrl = new URL('./samples/manifest.json', resourcesRoot);
+    const samplesRoot = new URL('../../demo/samples/', import.meta.url);
+    const manifestUrl = new URL('./manifest.json', samplesRoot);
 
     const manifestText = await readFile(manifestUrl, 'utf8');
     const manifest = JSON.parse(manifestText);
@@ -31,7 +31,7 @@ describe('Samples harness', () => {
           continue;
         }
 
-        const sampleUrl = new URL(relPath, resourcesRoot);
+        const sampleUrl = new URL(relPath.replace(/^samples\//, ''), samplesRoot);
         const input = await readFile(sampleUrl, 'utf8');
         const result = parse(input);
 

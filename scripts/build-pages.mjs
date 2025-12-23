@@ -3,16 +3,10 @@ import { cp, mkdir, rm } from 'node:fs/promises';
 const rootDir = new URL('../', import.meta.url);
 const distDir = new URL('../dist/', import.meta.url);
 const demoDir = new URL('../demo/', import.meta.url);
-const demoSamplesDir = new URL('../demo/samples/', import.meta.url);
-const testSamplesDir = new URL('../test/resources/samples/', import.meta.url);
 const pagesDir = new URL('../pages/', import.meta.url);
 
 await rm(pagesDir, { recursive: true, force: true });
 await mkdir(pagesDir, { recursive: true });
-
-// Copy test/resources/samples -> demo/samples so the demo can load ./samples/manifest.json
-await rm(demoSamplesDir, { recursive: true, force: true });
-await cp(testSamplesDir, demoSamplesDir, { recursive: true });
 
 // Copy demo -> pages/
 await cp(demoDir, pagesDir, { recursive: true });
