@@ -171,33 +171,65 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  let validationRunId = 0;
+
   const runValidation = () => {
+    const runId = (validationRunId += 1);
+    const startedAt = performance.now();
+
+    const activity = [];
+    const log = (msg) => activity.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
+
     const input = vttInput.value;
     safeLocalStorageSet(STORAGE_KEYS.input, input);
 
+    log(`Validation run #${runId} started`);
+    log(`Input length: ${input.length} chars`);
+
+    chipErrors.textContent = 'Errors: …';
+    chipWarnings.textContent = 'Warnings: …';
+    chipCues.textContent = 'Cues: …';
+    statusEl.innerHTML = `<div class="headline">VALIDATING…</div><div class="meta">${escapeText(activity.join('\n'))}</div>`;
+    diagnosticsEl.innerHTML = '';
+
     let result;
     try {
+      log('Calling parser…');
       result = parse(input);
+      log('Parser returned successfully');
     } catch (err) {
+      log(`Parser threw: ${err?.message || String(err)}`);
+
+      if (runId !== validationRunId) return;
+
       chipErrors.textContent = 'Errors: ?';
       chipWarnings.textContent = 'Warnings: ?';
       chipCues.textContent = 'Cues: 0';
-      statusEl.innerHTML = `<div class="headline">INVALID</div><div class="meta">Parser threw an exception: ${escapeText(err?.message || String(err))}</div>`;
+      statusEl.innerHTML = `<div class="headline">INVALID</div><div class="meta">${escapeText(activity.join('\n'))}</div>`;
       diagnosticsEl.innerHTML = '';
       return;
     }
 
+    if (runId !== validationRunId) return;
+
     const diagnostics = result?.diagnostics ?? [];
     const counts = countBySeverity(diagnostics, DiagnosticSeverity);
+    const cueCount = result?.cues?.length ?? 0;
+    log(`Diagnostics: ${diagnostics.length}`);
+    log(`Counts: ${counts.errors} error(s), ${counts.warnings} warning(s)`);
+    log(`Cues: ${cueCount}`);
 
     chipErrors.textContent = `Errors: ${counts.errors}`;
     chipWarnings.textContent = `Warnings: ${counts.warnings}`;
-    chipCues.textContent = `Cues: ${result?.cues?.length ?? 0}`;
+    chipCues.textContent = `Cues: ${cueCount}`;
 
     const isValid = counts.errors === 0;
+    const tookMs = Math.round(performance.now() - startedAt);
+    log(`Completed in ${tookMs}ms`);
+
     statusEl.innerHTML = isValid
-      ? `<div class="headline">VALID</div><div class="meta">No errors detected. (${counts.warnings} warning${counts.warnings === 1 ? '' : 's'})</div>`
-      : `<div class="headline">INVALID</div><div class="meta">${counts.errors} error${counts.errors === 1 ? '' : 's'}, ${counts.warnings} warning${counts.warnings === 1 ? '' : 's'}</div>`;
+      ? `<div class="headline">VALID</div><div class="meta">No errors detected. (${counts.warnings} warning${counts.warnings === 1 ? '' : 's'})\n\n${escapeText(activity.join('\n'))}</div>`
+      : `<div class="headline">INVALID</div><div class="meta">${counts.errors} error${counts.errors === 1 ? '' : 's'}, ${counts.warnings} warning${counts.warnings === 1 ? '' : 's'}\n\n${escapeText(activity.join('\n'))}</div>`;
 
     if (diagnostics.length === 0) {
       diagnosticsEl.innerHTML = `<div class="diag"><div><span class="badge info">INFO</span></div><div class="diag-main"><div class="diag-title">No diagnostics</div><div class="diag-sub">No errors or warnings found.</div></div></div>`;
@@ -206,14 +238,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     diagnosticsEl.innerHTML = diagnostics
       .map((d) => {
-        const sev = d.severity || 'info';
+        const sev = d.severity;
         const badge = sev === DiagnosticSeverity.Error ? 'error' : (sev === DiagnosticSeverity.Warning ? 'warning' : 'info');
         const code = d.code != null ? `Code ${d.code}` : '';
         const loc = formatLoc(d);
         return `
           <div class="diag" data-line="${escapeText(d.line ?? '')}" data-col="${escapeText(d.col ?? '')}">
             <div>
-              <span class="badge ${badge}">${escapeText(String(sev).toUpperCase())}</span>
+              <span class="badge ${badge}">${escapeText(String(sev ?? 'info').toUpperCase())}</span>
             </div>
             <div class="diag-main">
               <div class="diag-title">${escapeText(loc)}${code ? ` • ${escapeText(code)}` : ''}</div>
