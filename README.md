@@ -1,10 +1,18 @@
 # WebVTT Validator
 
+[![CI](https://github.com/khattaksd/webvtt-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/khattaksd/webvtt-validator/actions/workflows/ci.yml)
+[![Pages](https://github.com/khattaksd/webvtt-validator/actions/workflows/pages.yml/badge.svg)](https://github.com/khattaksd/webvtt-validator/actions/workflows/pages.yml)
+[![npm](https://img.shields.io/npm/v/%40serendevity%2Fwebvtt-validator)](https://www.npmjs.com/package/@serendevity/webvtt-validator)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A lightweight JavaScript library for validating WebVTT (Web Video Text Tracks) files in the browser. This library provides a simple API for validating WebVTT content and comes with a beautiful, responsive web interface for testing.
 
 ## Links
 
 - Demo (GitHub Pages): https://khattaksd.github.io/webvtt-validator/
+- Contributing: [CONTRIBUTING.md](./CONTRIBUTING.md)
+- Security: [SECURITY.md](./SECURITY.md)
+- License: [LICENSE](./LICENSE)
 
 ## Support policy
 
@@ -131,11 +139,11 @@ The built files will be available in the `dist` directory.
 
 ## License
 
-MIT
+MIT. See [LICENSE](./LICENSE).
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a Pull Request. See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Demo
 
