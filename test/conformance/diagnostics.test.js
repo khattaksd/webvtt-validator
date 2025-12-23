@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parse, formatDiagnostics, DiagnosticCode, DiagnosticSeverity } from '../../src/index.js';
+import { parse, formatDiagnostics, DiagnosticCode, DiagnosticSeverity } from '../../src/index.ts';
 
 describe('Diagnostics and Options', () => {
   describe('Strict Mode', () => {

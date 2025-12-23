@@ -4,11 +4,50 @@ const STORAGE_KEYS = {
   sample: 'webvtt_demo_sample',
 };
 
-const SAMPLES = {
-  default: `WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nThis is a sample WebVTT file.\n\n00:00:06.000 --> 00:00:10.000\nIt has multiple cues.`,
-  invalid: `WEBVTT\n\n00:00:00.000 --> 00:00:AA.BBB\nThis cue has a broken timestamp.\n\n00:00:06.000 --> 00:00:02.000\nThis cue ends before it starts.`,
-  tags: `WEBVTT\n\n00:00:01.000 --> 00:00:05.000\n<b>Bold</b> <i>Italic</i> <u>Underline</u>\n\n00:00:06.000 --> 00:00:10.000\n<v Speaker>Voice tag</v> and <c.green>class tag</c>.`,
-};
+async function loadSampleManifest() {
+  const res = await fetch('./samples/manifest.json', { cache: 'no-cache' });
+  if (!res.ok) throw new Error(`Failed to load samples manifest (${res.status})`);
+  return await res.json();
+}
+
+function clearSelect(selectEl) {
+  while (selectEl.firstChild) selectEl.removeChild(selectEl.firstChild);
+}
+
+function populateSamplesSelect(selectEl, manifest) {
+  clearSelect(selectEl);
+
+  const groups = Array.isArray(manifest?.groups) ? manifest.groups : [];
+  for (const group of groups) {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = String(group?.label ?? 'Samples');
+
+    const items = Array.isArray(group?.items) ? group.items : [];
+    for (const item of items) {
+      const opt = document.createElement('option');
+      opt.value = String(item?.id ?? '');
+      opt.textContent = String(item?.label ?? item?.id ?? 'Sample');
+      opt.dataset.path = String(item?.path ?? '');
+      optgroup.appendChild(opt);
+    }
+
+    if (optgroup.children.length > 0) {
+      selectEl.appendChild(optgroup);
+    }
+  }
+}
+
+function getSelectedSamplePath(selectEl) {
+  const opt = selectEl.selectedOptions && selectEl.selectedOptions[0];
+  return opt?.dataset?.path || '';
+}
+
+async function fetchSampleText(path) {
+  if (!path) return '';
+  const res = await fetch(`./${path}`, { cache: 'no-cache' });
+  if (!res.ok) throw new Error(`Failed to load sample (${res.status})`);
+  return await res.text();
+}
 
 function clamp(n, min, max) {
   return Math.min(max, Math.max(min, n));
@@ -105,9 +144,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   setSplitLeftPercent(getSplitLeftPercent());
 
+  let manifest = null;
+  try {
+    manifest = await loadSampleManifest();
+    populateSamplesSelect(sampleSelect, manifest);
+  } catch {
+    // If samples fail to load, leave the select as-is.
+  }
+
   // Restore input/sample.
   const savedSample = safeLocalStorageGet(STORAGE_KEYS.sample);
-  if (savedSample && Object.hasOwn(SAMPLES, savedSample)) {
+  if (savedSample && sampleSelect.querySelector(`option[value="${CSS.escape(savedSample)}"]`)) {
     sampleSelect.value = savedSample;
   }
 
@@ -115,7 +162,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (savedInput && savedInput.trim().length > 0) {
     vttInput.value = savedInput;
   } else {
-    vttInput.value = SAMPLES[sampleSelect.value] ?? SAMPLES.default;
+    try {
+      const path = getSelectedSamplePath(sampleSelect);
+      const text = await fetchSampleText(path);
+      vttInput.value = text;
+    } catch {
+      vttInput.value = 'WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nSample failed to load.';
+    }
   }
 
   const runValidation = () => {
@@ -177,10 +230,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   vttInput.addEventListener('input', runValidationDebounced);
   validateBtn.addEventListener('click', runValidation);
 
-  sampleSelect.addEventListener('change', () => {
+  sampleSelect.addEventListener('change', async () => {
     const key = sampleSelect.value;
     safeLocalStorageSet(STORAGE_KEYS.sample, key);
-    vttInput.value = SAMPLES[key] ?? SAMPLES.default;
+    try {
+      const path = getSelectedSamplePath(sampleSelect);
+      vttInput.value = await fetchSampleText(path);
+    } catch (err) {
+      vttInput.value = `WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nFailed to load sample: ${String(err?.message || err)}`;
+    }
     runValidation();
   });
 

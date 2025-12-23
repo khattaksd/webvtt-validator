@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parse } from '../../src/index.js';
-import { DiagnosticCode } from '../../src/parser/diagnostics.js';
+import { parse } from '../../src/index.ts';
+import { DiagnosticCode } from '../../src/parser/diagnostics.ts';
 
 describe('WebVTT Cue Timings and Settings (§6.3)', () => {
   describe('Timestamps', () => {

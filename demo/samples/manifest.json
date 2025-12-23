@@ -1,0 +1,34 @@
+{
+  "groups": [
+    {
+      "label": "Valid",
+      "items": [
+        { "id": "valid-basic", "label": "Basic", "path": "samples/valid-basic.vtt" },
+        { "id": "valid-tags", "label": "Cue text tags", "path": "samples/valid-tags.vtt" },
+        { "id": "valid-multiple-cues", "label": "Multiple cues", "path": "samples/valid-multiple-cues.vtt" },
+        { "id": "valid-region-and-cue", "label": "Region + cue", "path": "samples/valid-region-and-cue.vtt" },
+        { "id": "valid-style-and-cue", "label": "Style + cue", "path": "samples/valid-style-and-cue.vtt" },
+        { "id": "valid-settings", "label": "Cue settings", "path": "samples/valid-settings.vtt" },
+        { "id": "valid-bom", "label": "BOM", "path": "samples/valid-bom.vtt" },
+        { "id": "valid-crlf", "label": "CRLF newlines", "path": "samples/valid-crlf.vtt" },
+        { "id": "valid-hours", "label": "HH:MM:SS timestamps", "path": "samples/valid-hours.vtt" },
+        { "id": "valid-ruby", "label": "Ruby / rt", "path": "samples/valid-ruby.vtt" },
+        { "id": "valid-unknown-tags", "label": "Unknown tags ignored", "path": "samples/valid-unknown-tags.vtt" }
+      ]
+    },
+    {
+      "label": "Invalid",
+      "items": [
+        { "id": "invalid-bad-signature", "label": "Bad signature", "path": "samples/invalid-bad-signature.vtt" },
+        { "id": "invalid-bad-timestamp", "label": "Bad timestamp", "path": "samples/invalid-bad-timestamp.vtt" },
+        { "id": "invalid-start-after-end", "label": "Start after end", "path": "samples/invalid-start-after-end.vtt" },
+        { "id": "invalid-arrow", "label": "Bad arrow", "path": "samples/invalid-arrow.vtt" },
+        { "id": "invalid-cuetext-timestamp", "label": "Cue text bad <timestamp>", "path": "samples/invalid-cuetext-timestamp.vtt" },
+        { "id": "invalid-missing-blank-line", "label": "Missing blank line after header", "path": "samples/invalid-missing-blank-line.vtt" },
+        { "id": "invalid-garbage-block", "label": "Garbage block", "path": "samples/invalid-garbage-block.vtt" },
+        { "id": "invalid-region-settings", "label": "Bad REGION settings", "path": "samples/invalid-region-settings.vtt" },
+        { "id": "invalid-timestamp-seconds", "label": "Seconds out of range", "path": "samples/invalid-timestamp-seconds.vtt" }
+      ]
+    }
+  ]
+}

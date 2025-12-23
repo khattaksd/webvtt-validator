@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parse } from '../../src/index.js';
-import { NodeType } from '../../src/parser/cue-text/parse-nodes.js';
+import { parse } from '../../src/index.ts';
+import { NodeType } from '../../src/parser/cue-text/parse-nodes.ts';
 
 describe('WebVTT Cue Text Parsing (§6.4)', () => {
   it('should parse plain text', () => {

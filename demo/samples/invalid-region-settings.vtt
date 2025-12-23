@@ -1,0 +1,7 @@
+WEBVTT
+
+REGION
+id:bad width:999% lines:x viewportanchor:wat
+
+00:00:00.000 --> 00:00:01.000 region:bad
+Region has invalid settings.

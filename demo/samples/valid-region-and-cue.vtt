@@ -1,0 +1,7 @@
+WEBVTT
+
+REGION
+id:bottom width:50% lines:3 regionanchor:0%,100% viewportanchor:0%,100% scroll:up
+
+00:00:00.000 --> 00:00:02.000 region:bottom
+Region-linked cue.

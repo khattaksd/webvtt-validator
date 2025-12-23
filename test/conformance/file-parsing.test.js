@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parse } from '../../src/index.js';
-import { DiagnosticCode, DiagnosticSeverity } from '../../src/parser/diagnostics.js';
+import { parse } from '../../src/index.ts';
+import { DiagnosticCode, DiagnosticSeverity } from '../../src/parser/diagnostics.ts';
 
 describe('WebVTT File Parsing (§6.1)', () => {
   describe('Signature', () => {

@@ -1,0 +1,4 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.000
+<foo>Unknown start tag</foo> should be treated as plain text children.
