@@ -44,7 +44,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "vite": "^7.3.0",
+    "vite": "^8.0.0",
     "vitest": "^4.0.16"
   },
   "files": [
